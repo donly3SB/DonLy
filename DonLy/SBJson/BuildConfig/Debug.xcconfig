@@ -1,0 +1,9 @@
+//
+//  Shared.xcconfig
+//  360safe
+//
+//  Created by jinjian on 11/13/12.
+//  Copyright (c) 2012 qihoo. All rights reserved.
+//
+
+#include "Shared.xcconfig"

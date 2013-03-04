@@ -7,14 +7,40 @@
 //
 
 #import "AppDelegate.h"
+#import "MainViewController.h"
+#import "UIImageViewController.h"
+#import <QuartzCore/CAAnimation.h>
 
+@interface AppDelegate ()
+@property(nonatomic, assign) UIViewId currViewId;
+@property (strong, nonatomic) UINavigationController* naviController;
+
+@property(strong, nonatomic) UIMainViewController*  mainViewController;
+@property(strong, nonatomic) UIImageViewController* imageViewController;
+
+- (void) switchViewByCoreAnimation;
+
+@end
+
+//--------------------------------------
 @implementation AppDelegate
+@synthesize currViewId;
+@synthesize naviController;
+@synthesize mainViewController;
+@synthesize imageViewController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-    self.window.backgroundColor = [UIColor whiteColor];
+    self.window.backgroundColor = [UIColor clearColor];
+
+    mainViewController = [[UIMainViewController alloc] init];
+    self.naviController = [[UINavigationController alloc] initWithRootViewController:mainViewController];
+    [naviController setNavigationBarHidden:YES];
+
+    [self.window addSubview:naviController.view];
+    
     [self.window makeKeyAndVisible];
     return YES;
 }
@@ -44,6 +70,58 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+//
+- (UIViewController*) viewById:(UIViewId) viewId
+{
+    if (EViewIdMain == viewId) {
+        if (nil == mainViewController.view) {
+            mainViewController = [[UIMainViewController alloc] init];
+        }
+        return mainViewController;
+    }
+    if (EViewIdImage == viewId) {
+        if (nil == imageViewController.view) {
+            imageViewController = [[UIImageViewController alloc] init];
+        }
+        return imageViewController;
+    }
+    return nil;
+}
+
+- (void) switchBackView
+{
+    [self switchViewByCoreAnimation];
+    UIViewController* ctl = [naviController popViewControllerAnimated:NO];
+    if (imageViewController == ctl) {
+        [imageViewController release]; imageViewController = nil;
+    }
+    if (mainViewController == [naviController topViewController]) {
+        [mainViewController refreshData];
+    }
+}
+
+- (void) switchToView:(UIViewId) viewId
+{
+    UIViewController* desCtl = [self viewById:viewId];
+    if (desCtl) {
+        [self switchViewByCoreAnimation];
+        [naviController pushViewController:desCtl animated:NO];
+    }
+}
+
+#pragma mark Core Animation
+- (void) switchViewByCoreAnimation
+{
+    CATransition *animation = [CATransition animation];
+    animation.delegate = self;
+    animation.duration = 0.4;
+    animation.timingFunction = UIViewAnimationCurveEaseInOut;
+    animation.type = kCATransitionFade;
+    animation.removedOnCompletion = YES;
+
+    [naviController.view.layer addAnimation:animation forKey:@"animation"];
 }
 
 @end

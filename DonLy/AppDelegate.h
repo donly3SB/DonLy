@@ -6,10 +6,16 @@
 //  Copyright (c) 2013年 chen dianbo. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "common.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+
+//Export
+- (UIViewController*) viewById:(UIViewId) viewId;
+
+- (void) switchBackView;
+- (void) switchToView:(UIViewId) viewId;
 
 @end
